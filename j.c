@@ -408,50 +408,9 @@ void move_player(t_player *player, t_map *map, double direction)
     }
 }
 
-
-
-// void mlx_draw_line(void *mlx, void *win, int x0, int y0, int x1, int y1, int color) {
-//     int dx = abs(x1 - x0);
-//     int dy = abs(y1 - y0);
-//     int sx = (x0 < x1) ? 1 : -1;
-//     int sy = (y0 < y1) ? 1 : -1;
-//     int err = (dx > dy ? dx : -dy) / 2;
-//     int e2;
-
-//     while (true) {
-//         // Instead of the previous pixel_put, use this to directly interface with MinilibX
-//         mlx_pixel_put(mlx, win, x0, y0, color);
-//         if (x0 == x1 && y0 == y1) break;
-//         e2 = err;
-//         if (e2 > -dx) { err -= dy; x0 += sx; }
-//         if (e2 < dy) { err += dx; y0 += sy; }
-//     }
-// }
-
-// bool is_door(int x, int y, t_map *map)
-// {
-//     int map_x = x / CELL_SIZE;
-//     int map_y = y / CELL_SIZE;
-
-//     if (map->map[map_y][map_x] == 'D')
-//         return true;
-//     return false;
-// }
-
-// void toggle_door(int x, int y, t_map *map)
-// {
-//     int map_x = x / CELL_SIZE;
-//     int map_y = y / CELL_SIZE;
-
-//     if (map->map[map_y][map_x] == 'D')
-//         map->map[map_y][map_x] = 'd';
-//     else if (map->map[map_y][map_x] == 'd')
-//         map->map[map_y][map_x] = 'D';
-// }
-
-
 void draw_minimap(t_data *data)
 {
+    // First, draw the map tiles.
     for (int y = 0; y < data->map.row_len * CELL_SIZE; y += data->mini_map_scale)
     {
         for (int x = 0; x < data->map.col_len * CELL_SIZE; x += data->mini_map_scale)
@@ -465,16 +424,48 @@ void draw_minimap(t_data *data)
             else if (data->map.map[y / CELL_SIZE][x / CELL_SIZE] == 'd')
                 color = COLOR_BLUE;
 
-            // Check if the current position is near the player to draw the player
-            if (fabs(x - data->player.x) <= PLAYER_SIZE/2 && fabs(y - data->player.y) <= PLAYER_SIZE/2) {
-                color = COLOR_BLACK;
-            }
-
             // Draw the pixel on the minimap
             my_mlx_pixel_put(data, x / data->mini_map_scale, y / data->mini_map_scale, color);
         }
     }
+
+    // Then, draw the player at the specified size.
+    int player_minimap_x = data->player.x / data->mini_map_scale;
+    int player_minimap_y = data->player.y / data->mini_map_scale;
+
+    for (int py = 0; py < 5; py++)
+    {
+        for (int px = 0; px < 5; px++)
+        {
+            my_mlx_pixel_put(data, player_minimap_x + px, player_minimap_y + py, COLOR_BLACK);
+        }
+    }
 }
+
+
+// void draw_minimap(t_data *data)
+// {
+//     for (int y = 0; y < data->map.row_len * CELL_SIZE; y += data->mini_map_scale)
+//     {
+//         for (int x = 0; x < data->map.col_len * CELL_SIZE; x += data->mini_map_scale)
+//         {
+//             int color = COLOR_GREEN;
+
+//             if (data->map.map[y / CELL_SIZE][x / CELL_SIZE] == '1')
+//                 color = COLOR_WHITE;
+//             else if (data->map.map[y / CELL_SIZE][x / CELL_SIZE] == 'D')
+//                 color = COLOR_RED;
+//             else if (data->map.map[y / CELL_SIZE][x / CELL_SIZE] == 'd')
+//                 color = COLOR_BLUE;
+
+//             // Check if the current position is near the player to draw the player
+//             if (fabs(x - data->player.x) <= PLAYER_SIZE/2 && fabs(y - data->player.y) <= PLAYER_SIZE/2)
+//                 color = COLOR_BLACK;
+//             // Draw the pixel on the minimap
+//             my_mlx_pixel_put(data, x / data->mini_map_scale, y / data->mini_map_scale, color);
+//         }
+//     }
+// }
 
 int mouse_move(int x, int y, void *param)
 {
